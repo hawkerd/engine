@@ -1,0 +1,5 @@
+.vscode/
+.vscode
+game
+*.o
+bin

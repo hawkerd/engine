@@ -8,12 +8,17 @@ CFLAGS = -Wall -Wextra -std=c11
 LDFLAGS = -lglfw -lGL
 
 # src files
-CXX_SRCS = game.cpp renderer.cpp
-C_SRCS = glad.c
-OBJS = $(CXX_SRCS:.cpp=.o) $(C_SRCS:.c=.o)
+SRC_DIR = src
+BIN_DIR = bin
+INCLUDE_DIR = include
+
+CXX_SRCS = $(SRC_DIR)/game.cpp $(SRC_DIR)/renderer.cpp
+C_SRCS = $(SRC_DIR)/glad.c
+OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(BIN_DIR)/%.o, $(CXX_SRCS)) \
+       $(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.o, $(C_SRCS))
 
 # output
-TARGET = game
+TARGET = $(BIN_DIR)/game
 
 all: $(TARGET)
 
@@ -21,15 +26,18 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CXX) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
-%.o: %.cpp renderer.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/renderer.h
+	mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
+	
+$(BIN_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
 
 # clean
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf $(BIN_DIR)/*
 
 # run
 run: $(TARGET)
