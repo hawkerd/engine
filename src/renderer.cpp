@@ -34,25 +34,31 @@ Renderer::Renderer() {
         throw std::runtime_error("Failed to initialize GLAD");
     }
 
-
     s = new Shader("/home/hawkerd/projects/engine/src/shader/shader.vert", 
         "/home/hawkerd/projects/engine/src/shader/shader.frag");
 
-    // define vertices
-    //float vertices[] = {
-    //    -0.5f, -0.5f, 0.0f,
-    //    0.5f, -0.5f, 0.0f,
-    //    0.0f, 0.5f, 0.0f
-    //};
     float vertices[] = {
         0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
         -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f
     };
-    //unsigned int indices[] = {
-    //    0, 1, 3,   // first triangle
-    //    1, 2, 3    // second triangle
-    //};
+
+    float texCoords[] = {
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        0.5f, 1.0f
+    };
+
+    // specify behavior for out-of-bounds coordinates
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+    float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    // specify texel behavior for scaling up/down
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // set up buffers
     glGenVertexArrays(1, &VAO); // generate VAO (stores buffer configuration, that is VBO and EBO bindings)
