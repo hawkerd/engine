@@ -18,7 +18,8 @@ class Renderer {
         const unsigned int SCR_WIDTH = 1600;
         const unsigned int SCR_HEIGHT = 900;
 
-        unsigned int texture;
+        unsigned int texture1;
+        unsigned int texture2;
         unsigned int VAO;
         unsigned int VBO;
         unsigned int EBO;
