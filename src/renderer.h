@@ -1,6 +1,9 @@
 #include <glad/glad.h>
 #include "shader/shader.h"
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #ifndef RENDERER_H
 #define RENDERER_H
@@ -29,9 +32,6 @@ class Renderer {
         double lastUpdateTime = 0; // track the last update (cycle) time
         double lastFrameTime = 0; // track the last time a frame was displayed
         double fpsLimit = 60.0;
-        
-        const char* vertexShaderSource;
-        const char* fragmentShaderSource;
 
         void drawTriangle();
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height); // callback function to handle window resize

@@ -102,6 +102,7 @@ Renderer::Renderer() {
 
     // load/generate the texture
     int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load("textures/container.jpg", &width, &height, &nrChannels, 0);
     if (!data) {
         throw std::runtime_error("Failed to load texture from file");
@@ -170,6 +171,14 @@ void Renderer::render() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         s->use();
+
+        // create matrix
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime() * 2, glm::vec3(0.0f, 1.0f, 1.0f));
+
+        s->setMat4("transform", trans);
+
         
         // bind textures
         glActiveTexture(GL_TEXTURE0);
