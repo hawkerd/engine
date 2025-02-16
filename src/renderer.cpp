@@ -60,8 +60,8 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     // build/compile shader
-    Shader s("/home/hawkerd/projects/engine/src/shader/shader.vert", 
-        "/home/hawkerd/projects/engine/src/shader/shader.frag");
+    Shader s("C:/Code/engine/src/shader/shader.vert", 
+        "C:/Code/engine/src/shader/shader.frag");
 
     // set up vertex + buffer data
     float vertices[] = {
@@ -162,7 +162,7 @@ int main() {
     // load/generate the texture
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load("textures/container.jpg", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load("C:/Code/engine/textures/container.jpg", &width, &height, &nrChannels, 0);
     if (!data) {
         throw std::runtime_error("Failed to load texture from file");
     }
@@ -175,7 +175,7 @@ int main() {
     glGenTextures(1, &texture2);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2);
-    data = stbi_load("textures/awesomeface.png", &width, &height, &nrChannels, 0);
+    data = stbi_load("C:/Code/engine/textures/awesomeface.png", &width, &height, &nrChannels, 0);
     if (!data) {
         throw std::runtime_error("Failed to load texture from file");
     }
