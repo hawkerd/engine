@@ -9,7 +9,9 @@ enum CameraMovement {
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN
 };
 
 const float YAW = -90.0f;
@@ -82,6 +84,12 @@ class Camera {
             }
             if (direction == RIGHT) {
                 position += right * velocity;
+            }
+            if (direction == UP) {
+                position += up * velocity;
+            }
+            if (direction == DOWN) {
+                position -= up * velocity;
             }
         }
 
