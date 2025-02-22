@@ -86,10 +86,10 @@ class Camera {
                 position += right * velocity;
             }
             if (direction == UP) {
-                position += up * velocity;
+                position += worldUp * velocity;
             }
             if (direction == DOWN) {
-                position -= up * velocity;
+                position -= worldUp * velocity;
             }
         }
 

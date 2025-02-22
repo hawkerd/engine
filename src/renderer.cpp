@@ -3,7 +3,7 @@
 #include <fstream>
 #include <cmath>
 #include <glad/glad.h>
-#include "shader/shader.h"
+#include "shader.h"
 #include "camera.h"
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -61,11 +61,11 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     // build/compile shaders
-    Shader lightingShader("C:/Code/engine/src/shader/lightingShader.vert", 
-        "C:/Code/engine/src/shader/lightingShader.frag");
+    Shader lightingShader("assets/shaders/lightingShader.vert", 
+        "assets/shaders/lightingShader.frag");
 
-    Shader lightCubeShader("C:/Code/engine/src/shader/lightCubeShader.vert", 
-        "C:/Code/engine/src/shader/lightCubeShader.frag");
+    Shader lightCubeShader("assets/shaders/lightCubeShader.vert", 
+        "assets/shaders/lightCubeShader.frag");
 
     float vertices[] = {
         // positions          // normals           // texture coords
@@ -155,9 +155,9 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
 
-    unsigned int diffuseMap = loadTexture("C:/Code/engine/textures/container2.png");
+    unsigned int diffuseMap = loadTexture("assets/textures/container2.png");
 
-    unsigned int specularMap = loadTexture("C:/Code/engine/textures/container2_specular.png");
+    unsigned int specularMap = loadTexture("assets/textures/container2_specular.png");
 
     lightingShader.use();
     lightingShader.setInt("material.diffuse", 0);

@@ -3,3 +3,4 @@
 game
 *.o
 bin
+build
