@@ -31,12 +31,10 @@ set(SOURCES
 add_executable(renderer ${SOURCES})
 
 # link GLFW and OpenGL
-if (APPLE)
-    target_link_libraries(renderer glfw OpenGL Cocoa IOKit)
-else()
-    target_link_directories(renderer PRIVATE ${LIB_DIR}/glfw/lib-mingw-w64)
-    target_link_libraries(renderer glfw3 opengl32 gdi32)
-endif()
+target_link_directories(renderer PRIVATE ${LIB_DIR}/glfw/lib-mingw-w64)
+target_link_directories(renderer PRIVATE ${LIB_DIR}/lib)
+
+target_link_libraries(renderer glfw3 opengl32 gdi32 assimp)
 
 # copy assets for easy access during runtime
 add_custom_target(copy_assets ALL

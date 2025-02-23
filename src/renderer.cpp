@@ -1,14 +1,17 @@
-#include "stb_image.h"
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include <glad/glad.h>
-#include "shader.h"
-#include "camera.h"
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <model.h>
+#include <mesh.h>
+#include <shader.h>
+#include <camera.h>
+#include <stb_image.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
