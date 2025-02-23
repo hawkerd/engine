@@ -13,15 +13,22 @@
 
 using namespace std;
 
+#define MAX_BONE_INFLUENCE 4
+
 struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec2 textureCoordinates;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+	int m_BoneIds[MAX_BONE_INFLUENCE];
+	float m_weights[MAX_BONE_INFLUENCE];
 };
 
 struct Texture {
 	unsigned int id;
 	string type;
+	string path;
 };
 
 class Mesh {

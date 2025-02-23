@@ -13,12 +13,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # aliases for directories
 set(SRC_DIR src)
+set(ASSETS_DIR assets)
 set(BIN_DIR bin)
 set(INCLUDE_DIR include)
 set(LIB_DIR libs)
-
-# include directories
-include_directories(${INCLUDE_DIR})
 
 # source files
 set(SOURCES 
@@ -30,18 +28,25 @@ set(SOURCES
 # main executable
 add_executable(renderer ${SOURCES})
 
-# link GLFW and OpenGL
-target_link_directories(renderer PRIVATE ${LIB_DIR}/glfw/lib-mingw-w64)
-target_link_directories(renderer PRIVATE ${LIB_DIR}/lib)
+# include directories
+target_include_directories(renderer PRIVATE ${CMAKE_SOURCE_DIR}/${INCLUDE_DIR})
 
-target_link_libraries(renderer glfw3 opengl32 gdi32 assimp)
+# link library directories
+target_link_directories(renderer PRIVATE ${CMAKE_SOURCE_DIR}/${LIB_DIR}/lib)
 
-# copy assets for easy access during runtime
-add_custom_target(copy_assets ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
+# link libaries
+target_link_libraries(renderer glfw3dll opengl32 gdi32 assimp)
+
+# move libraries into bin dir at runtime
+add_custom_command(TARGET renderer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/${LIB_DIR}/bin/glfw3.dll
+        ${CMAKE_SOURCE_DIR}/${LIB_DIR}/bin/libassimp-5.dll
+        ${CMAKE_BINARY_DIR}/${BIN_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/${ASSETS_DIR}
+        ${CMAKE_BINARY_DIR}/${BIN_DIR}/${ASSETS_DIR}
 )
-
-add_dependencies(renderer copy_assets)
 
 # output dir
 set_target_properties(renderer PROPERTIES 
@@ -50,8 +55,8 @@ set_target_properties(renderer PROPERTIES
 
 # Custom target to run the executable
 add_custom_target(run
-    COMMAND renderer
+    COMMAND ${CMAKE_BINARY_DIR}/${BIN_DIR}/renderer
     DEPENDS renderer
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${BIN_DIR}
     COMMENT "Running renderer..."
 )
