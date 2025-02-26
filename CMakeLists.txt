@@ -23,6 +23,14 @@ set(SOURCES
     ${SRC_DIR}/renderer.cpp 
     ${SRC_DIR}/stb_image.cpp 
     ${SRC_DIR}/glad.c
+    ${SRC_DIR}/shader.cpp
+    ${SRC_DIR}/camera.cpp
+    ${SRC_DIR}/model.cpp
+    ${SRC_DIR}/mesh.cpp
+    ${SRC_DIR}/vao.cpp
+    ${SRC_DIR}/vbo.cpp
+    ${SRC_DIR}/ebo.cpp
+    ${SRC_DIR}/vertex.cpp
 )
 
 # main executable
