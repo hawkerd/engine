@@ -14,14 +14,9 @@
 #include "vbo.h"
 #include "vao.h"
 #include "ebo.h"
+#include "texture.h"
 
 using namespace std;
-
-struct Texture {
-	unsigned int id;
-	string type;
-	string path;
-};
 
 class Mesh {
 	public:

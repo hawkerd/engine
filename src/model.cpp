@@ -114,6 +114,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 // retrieve, load, and initilaize the texture from the material
 vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName) {
     vector<Texture> textures;
+
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
@@ -128,49 +129,13 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,
         }
 
         if (!skip) {
-            Texture texture;
-            texture.id = textureFromFile(str.C_Str(), directory, gammaCorrection);
+            Texture texture(directory + "/" + str.C_Str());
             texture.type = typeName;
             texture.path = str.C_Str();
             textures.push_back(texture);
             loadedTextures.push_back(texture);
         }
     }
+
     return textures;
-}
-
-unsigned int Model::textureFromFile(const char* path, const string& directory, bool gamma) {
-    string filename = string(path);
-    filename = directory + '/' + path;
-
-    unsigned int textureId;
-    glGenTextures(1, &textureId);
-
-    int width, height, numComponents;
-    unsigned char* data = stbi_load(filename.c_str(), &width, &height, &numComponents, 0);
-    if (!data) {
-        throw runtime_error("Failed to load texture");
-    }
-
-    GLenum format;
-    if (numComponents == 1) {
-        format = GL_RED;
-    } else if (numComponents == 3) {
-        format = GL_RGB;
-    } else if (numComponents == 4) {
-        format = GL_RGBA;
-    }
-
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_image_free(data);
-
-    return textureId;
 }

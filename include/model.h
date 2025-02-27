@@ -41,7 +41,6 @@ class Model {
 
         // retrieve, load, and initilaize the texture from the material
         vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
-        unsigned int textureFromFile(const char* path, const string& directory, bool gamma);
 };
 
 #endif
