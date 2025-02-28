@@ -6,11 +6,24 @@
 #include <glm/glm.hpp>
 #include <array>
 #include "vertex.h"
+#include <iostream>
+#include <cstring>
+
+struct Attribute {
+    GLint size;
+    GLenum type;
+    GLboolean normalized;
+    std::size_t offset;
+    std::string name;
+};
 
 class VBO {
     public:
         GLuint id;
-        VBO(const std::vector<Vertex>& vertices);
+        GLsizei stride;
+        std::vector<Attribute> attributes;
+
+        VBO(std::vector<Vertex>& vertices);
 
         void bind();
         void unbind();

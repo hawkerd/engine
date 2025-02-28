@@ -1,18 +1,25 @@
 #include "vertex.h"
 
-std::vector<std::tuple<std::string, int, GLenum, std::size_t>> Vertex::getAttributes() {
-    return {
-        {"position", 3, GL_FLOAT, offsetof(Vertex, position)},
-        {"normal", 3, GL_FLOAT, offsetof(Vertex, normal)},
-        {"textureCoordinates", 2, GL_FLOAT, offsetof(Vertex, textureCoordinates)},
-        {"tangent", 3, GL_FLOAT, offsetof(Vertex, tangent)},
-        {"bitangent", 3, GL_FLOAT, offsetof(Vertex, bitangent)},
-        {"boneIds", 4, GL_INT, offsetof(Vertex, boneIds)},
-        {"weights", 4, GL_FLOAT, offsetof(Vertex, weights)}
-    };
+std::vector<std::tuple<std::string, int, GLenum, std::size_t>> Vertex::getAttributes() const {
+    std::vector<std::tuple<std::string, int, GLenum, std::size_t>> attributes;
+    if (attributeMask & POSITION) {
+        attributes.push_back(std::make_tuple("position", 3, GL_FLOAT, offsetof(Vertex, position)));
+    }
+    if (attributeMask & NORMAL) {
+        attributes.push_back(std::make_tuple("normal", 3, GL_FLOAT, offsetof(Vertex, normal)));
+    }
+    if (attributeMask & TEXCOORD) {
+        attributes.push_back(std::make_tuple("texCoords", 2, GL_FLOAT, offsetof(Vertex, textureCoordinates)));
+    }
+    if (attributeMask & TANGENT) {
+        attributes.push_back(std::make_tuple("tangent", 3, GL_FLOAT, offsetof(Vertex, tangent)));
+    }
+    if (attributeMask & BITANGENT) {
+        attributes.push_back(std::make_tuple("bitangent", 3, GL_FLOAT, offsetof(Vertex, bitangent)));
+    }
+    if (attributeMask & BONES) {
+        attributes.push_back(std::make_tuple("boneIds", 4, GL_INT, offsetof(Vertex, boneIds)));
+        attributes.push_back(std::make_tuple("weights", 4, GL_FLOAT, offsetof(Vertex, weights)));
+    }
+    return attributes;
 }
-
-Vertex::Vertex()
-    : position(0.0f), normal(0.0f), textureCoordinates(0.0f),
-      tangent(1.0f, 0.0f, 0.0f), bitangent(0.0f, 1.0f, 0.0f),
-      boneIds({0, 0, 0, 0}), weights({1.0f, 0.0f, 0.0f, 0.0f}) {}

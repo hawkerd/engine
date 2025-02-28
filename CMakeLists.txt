@@ -45,8 +45,8 @@ target_link_directories(renderer PRIVATE ${CMAKE_SOURCE_DIR}/${LIB_DIR}/lib)
 # link libaries
 target_link_libraries(renderer glfw3dll opengl32 gdi32 assimp)
 
-# move libraries into bin dir at runtime
-add_custom_command(TARGET renderer POST_BUILD
+# move libraries and assets into bin dir at runtime
+add_custom_target(copy_assets ALL
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_SOURCE_DIR}/${LIB_DIR}/bin/glfw3.dll
         ${CMAKE_SOURCE_DIR}/${LIB_DIR}/bin/libassimp-5.dll
@@ -54,6 +54,7 @@ add_custom_command(TARGET renderer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/${ASSETS_DIR}
         ${CMAKE_BINARY_DIR}/${BIN_DIR}/${ASSETS_DIR}
+    COMMENT "Copying assets and libraries..."
 )
 
 # output dir
@@ -64,7 +65,7 @@ set_target_properties(renderer PROPERTIES
 # Custom target to run the executable
 add_custom_target(run
     COMMAND ${CMAKE_BINARY_DIR}/${BIN_DIR}/renderer
-    DEPENDS renderer
+    DEPENDS renderer copy_assets
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${BIN_DIR}
     COMMENT "Running renderer..."
 )

@@ -6,9 +6,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <shader.h>
-#include <camera.h>
-#include <model.h>
+#include "shader.h"
+#include "camera.h"
+#include "model.h"
 #include "vao.h"
 #include "vbo.h"
 #include "ebo.h"
@@ -20,7 +20,7 @@
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
-unsigned int loadTexture(const char *path);
+unsigned int loadCubemap(vector<std::string> faces);
 
 // settings
 const unsigned int SCR_WIDTH = 1920;
@@ -58,72 +58,72 @@ int main()
     // build and compile shaders
     // -------------------------
     Shader shader("assets/shaders/lightingShader.vert", "assets/shaders/lightingShader.frag");
-
-    Model backback("assets/models/backpack/backpack.obj", shader);
+    Shader screenShader("assets/shaders/screenShader.vert", "assets/shaders/screenShader.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     std::vector<Vertex> cubeVertices = {
         // Back face
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}),
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}),
-        Vertex({-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}),
+        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}),
+        Vertex({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        Vertex({ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}),
+        Vertex({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}),
+        Vertex({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f}),
         // Front face
-        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}),
-        Vertex({-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}),
-        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}),
+        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
+        Vertex({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f}),
+        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 1.0f}),
+        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 1.0f}),
+        Vertex({-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f}),
+        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
         // Left face
-        Vertex({-0.5f,  0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
-        Vertex({-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}),
-        Vertex({-0.5f,  0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}),
-        Vertex({-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}),
-        Vertex({-0.5f,  0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
-        Vertex({-0.5f, -0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
+        Vertex({-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        Vertex({-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        Vertex({-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
         // Right face
-        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
+        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        Vertex({ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        Vertex({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        Vertex({ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        Vertex({ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
         // Bottom face
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}),
-        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}),
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}),
+        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        Vertex({ 0.5f, -0.5f, -0.5f}, {1.0f, 1.0f}),
+        Vertex({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f}),
+        Vertex({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f}),
+        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
+        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
         // Top face
-        Vertex({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}),
-        Vertex({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}),
-        Vertex({-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f})
+        Vertex({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f}),
+        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        Vertex({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        Vertex({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f}),
+        Vertex({-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f})
     };
 
     vector<Vertex> planeVertices = {
-        Vertex({ 5.0f, -0.5f,  5.0f}, {0.0f, 1.0f, 0.0f}, {2.0f, 0.0f}),
-        Vertex({-5.0f, -0.5f,  5.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}),
-        Vertex({-5.0f, -0.5f, -5.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 2.0f}),
-        Vertex({ 5.0f, -0.5f,  5.0f}, {0.0f, 1.0f, 0.0f}, {2.0f, 0.0f}),
-        Vertex({-5.0f, -0.5f, -5.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 2.0f}),
-        Vertex({ 5.0f, -0.5f, -5.0f}, {0.0f, 1.0f, 0.0f}, {2.0f, 2.0f})
+        Vertex({ 5.0f, -0.5f,  5.0f}, {2.0f, 0.0f}),
+        Vertex({-5.0f, -0.5f,  5.0f}, {0.0f, 0.0f}),
+        Vertex({-5.0f, -0.5f, -5.0f}, {0.0f, 2.0f}),
+        Vertex({ 5.0f, -0.5f,  5.0f}, {2.0f, 0.0f}),
+        Vertex({-5.0f, -0.5f, -5.0f}, {0.0f, 2.0f}),
+        Vertex({ 5.0f, -0.5f, -5.0f}, {2.0f, 2.0f})
     };
     
-    vector<Vertex> transparentVertices = {
-        Vertex({ 0.0f,  0.5f,  0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
-        Vertex({ 0.0f, -0.5f,  0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}),
-        Vertex({ 1.0f, -0.5f,  0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}),
-        Vertex({ 0.0f,  0.5f,  0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}),
-        Vertex({ 1.0f, -0.5f,  0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}),
-        Vertex({ 1.0f,  0.5f,  0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f})
+    vector<Vertex> quadVertices = {
+        Vertex({-1.0f,  1.0f,  0.0f}, {0.0f, 1.0f}),
+        Vertex({-1.0f, -1.0f,  0.0f}, {0.0f, 0.0f}),
+        Vertex({ 1.0f, -1.0f,  0.0f}, {1.0f, 0.0f}),
+
+        Vertex({-1.0f,  1.0f,  0.0f}, {0.0f, 1.0f}),
+        Vertex({ 1.0f, -1.0f,  0.0f}, {1.0f, 0.0f}),
+        Vertex({ 1.0f,  1.0f,  0.0f}, {1.0f, 1.0f})
     };
 
     VAO cubeVAO;
@@ -134,22 +134,47 @@ int main()
     VBO planeVBO(planeVertices);
     planeVAO.linkAttribs(planeVBO, shader);
 
-    VAO transparentVAO;
-    VBO transparentVBO(transparentVertices);
-    transparentVAO.linkAttribs(transparentVBO, shader);
+    VAO quadVAO;
+    VBO quadVBO(quadVertices);
+    quadVAO.linkAttribs(quadVBO, shader);
 
     Texture cubeTex("assets/textures/container.jpg");
     Texture floorTex("assets/textures/wall.jpg");
-    Texture transparentTex("assets/textures/blending_transparent_window.png");
 
-    vector<glm::vec3> vegetation 
-    {
-        glm::vec3(-1.5f, 0.0f, -0.48f),
-        glm::vec3( 1.5f, 0.0f, 0.51f),
-        glm::vec3( 0.0f, 0.0f, 0.7f),
-        glm::vec3(-0.3f, 0.0f, -2.3f),
-        glm::vec3 (0.5f, 0.0f, -0.6f)
+    unsigned int framebuffer;
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+    unsigned int textureColorbuffer;
+    glGenTextures(1, &textureColorbuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);\
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        throw std::runtime_error("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    vector<std::string> faces = {
+        "assets/textures/skybox/right.jpg",
+        "assets/textures/skybox/left.jpg",
+        "assets/textures/skybox/top.jpg",
+        "assets/textures/skybox/bottom.jpg",
+        "assets/textures/skybox/front.jpg",
+        "assets/textures/skybox/back.jpg"
     };
+    unsigned int cubemapTexture = loadCubemap(faces);
+
 
 
     // render loop
@@ -168,6 +193,9 @@ int main()
 
         // render
         // ------
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glEnable(GL_DEPTH_TEST);
+
         window.setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         window.clear();
 
@@ -193,29 +221,18 @@ int main()
         floorTex.bind();
         shader.setMat4("model", glm::mat4(1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        //backpack
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(50.0f, 0.0f, 0.0f));
-        shader.setMat4("model", model);
-        backback.draw();
-        // vegetation
-        transparentVAO.bind();
-        transparentTex.bind();
 
-        std::map<float, glm::vec3> sorted;
-        for (unsigned int i = 0; i < vegetation.size(); i++)
-        {
-            float distance = glm::length(camera.position - vegetation[i]);
-            sorted[distance] = vegetation[i];
-        }
 
-        for(std::map<float,glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it) 
-        {
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, it->second);				
-            shader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-        }  
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
+        window.setClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        window.clear();
+
+        screenShader.use();
+        quadVAO.bind();
+        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -229,12 +246,39 @@ int main()
     cubeVBO.del();
     planeVAO.del();
     planeVBO.del();
-    transparentVAO.del();
-    transparentVBO.del();
+    quadVAO.del();
+    quadVBO.del();
+    glDeleteRenderbuffers(1, &rbo);
+    glDeleteFramebuffers(1, &framebuffer);
 
     glfwTerminate();
     return 0;
 }
+
+unsigned int loadCubemap(vector<std::string> faces) {
+    unsigned int textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++) {
+        unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data){
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        } else {
+            stbi_image_free(data);
+            throw std::runtime_error("Failed to load cubmap texture");
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureId;
+}
+
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
