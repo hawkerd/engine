@@ -11,7 +11,7 @@ class VAO {
         GLuint id;
         VAO();
 
-        void linkAttribs(VBO& vbo, Shader& shader);
+        void linkAttribs(const VBO& vbo, const Shader& shader);
         void bind();
         void unbind();
         void del();

@@ -20,11 +20,11 @@ using namespace std;
 
 class Mesh {
 	public:
-		vector<Vertex> vertices;
+		vector<VertexPNTBS> vertices;
 		vector<unsigned int> indices;
 		vector<Texture> textures;
 
-        Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures, Shader& shader)
+        Mesh(vector<VertexPNTBS> vertices, vector<unsigned int> indices, vector<Texture> textures, Shader& shader)
             : vertices(vertices), indices(indices), textures(textures), vbo(vertices), ebo(indices), shader(shader) {
             setupMesh();
         }

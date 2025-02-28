@@ -14,6 +14,7 @@
 #include "ebo.h"
 #include "window.h"
 #include "texture.h"
+#include "vertex.h"
 
 #include <iostream>
 
@@ -62,68 +63,67 @@ int main()
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    std::vector<Vertex> cubeVertices = {
+    std::vector<VertexPT> cubeVertices = {
         // Back face
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}),
-        Vertex({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f}),
+        VertexPT({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}),
+        VertexPT({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        VertexPT({ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}),
+        VertexPT({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        VertexPT({-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}),
+        VertexPT({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f}),
         // Front face
-        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 1.0f}),
-        Vertex({-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f}),
-        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
+        VertexPT({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
+        VertexPT({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f}),
+        VertexPT({ 0.5f,  0.5f,  0.5f}, {1.0f, 1.0f}),
+        VertexPT({ 0.5f,  0.5f,  0.5f}, {1.0f, 1.0f}),
+        VertexPT({-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f}),
+        VertexPT({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
         // Left face
-        Vertex({-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
-        Vertex({-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
-        Vertex({-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
-        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
+        VertexPT({-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        VertexPT({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        VertexPT({-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        VertexPT({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        VertexPT({-0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        VertexPT({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
         // Right face
-        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
+        VertexPT({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        VertexPT({ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        VertexPT({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        VertexPT({ 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        VertexPT({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        VertexPT({ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
         // Bottom face
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
-        Vertex({ 0.5f, -0.5f, -0.5f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f}),
-        Vertex({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
-        Vertex({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        VertexPT({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
+        VertexPT({ 0.5f, -0.5f, -0.5f}, {1.0f, 1.0f}),
+        VertexPT({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f}),
+        VertexPT({ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f}),
+        VertexPT({-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f}),
+        VertexPT({-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}),
         // Top face
-        Vertex({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
-        Vertex({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
-        Vertex({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
-        Vertex({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f}),
-        Vertex({-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f})
+        VertexPT({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f}),
+        VertexPT({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        VertexPT({ 0.5f,  0.5f, -0.5f}, {1.0f, 1.0f}),
+        VertexPT({ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f}),
+        VertexPT({-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f}),
+        VertexPT({-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f})
     };
 
-    vector<Vertex> planeVertices = {
-        Vertex({ 5.0f, -0.5f,  5.0f}, {2.0f, 0.0f}),
-        Vertex({-5.0f, -0.5f,  5.0f}, {0.0f, 0.0f}),
-        Vertex({-5.0f, -0.5f, -5.0f}, {0.0f, 2.0f}),
-        Vertex({ 5.0f, -0.5f,  5.0f}, {2.0f, 0.0f}),
-        Vertex({-5.0f, -0.5f, -5.0f}, {0.0f, 2.0f}),
-        Vertex({ 5.0f, -0.5f, -5.0f}, {2.0f, 2.0f})
+    vector<VertexPT> planeVertices = {
+        VertexPT({ 5.0f, -0.5f,  5.0f}, {2.0f, 0.0f}),
+        VertexPT({-5.0f, -0.5f,  5.0f}, {0.0f, 0.0f}),
+        VertexPT({-5.0f, -0.5f, -5.0f}, {0.0f, 2.0f}),
+        VertexPT({ 5.0f, -0.5f,  5.0f}, {2.0f, 0.0f}),
+        VertexPT({-5.0f, -0.5f, -5.0f}, {0.0f, 2.0f}),
+        VertexPT({ 5.0f, -0.5f, -5.0f}, {2.0f, 2.0f})
     };
     
-    vector<Vertex> quadVertices = {
-        Vertex({-1.0f,  1.0f,  0.0f}, {0.0f, 1.0f}),
-        Vertex({-1.0f, -1.0f,  0.0f}, {0.0f, 0.0f}),
-        Vertex({ 1.0f, -1.0f,  0.0f}, {1.0f, 0.0f}),
-
-        Vertex({-1.0f,  1.0f,  0.0f}, {0.0f, 1.0f}),
-        Vertex({ 1.0f, -1.0f,  0.0f}, {1.0f, 0.0f}),
-        Vertex({ 1.0f,  1.0f,  0.0f}, {1.0f, 1.0f})
+    vector<VertexPT> quadVertices = {
+        VertexPT({-1.0f,  1.0f,  0.0f}, {0.0f, 1.0f}),
+        VertexPT({-1.0f, -1.0f,  0.0f}, {0.0f, 0.0f}),
+        VertexPT({ 1.0f, -1.0f,  0.0f}, {1.0f, 0.0f}),
+        VertexPT({-1.0f,  1.0f,  0.0f}, {0.0f, 1.0f}),
+        VertexPT({ 1.0f, -1.0f,  0.0f}, {1.0f, 0.0f}),
+        VertexPT({ 1.0f,  1.0f,  0.0f}, {1.0f, 1.0f})
     };
 
     VAO cubeVAO;

@@ -9,25 +9,25 @@
 #include <iostream>
 #include <cstring>
 
-struct Attribute {
-    GLint size;
-    GLenum type;
-    GLboolean normalized;
-    std::size_t offset;
-    std::string name;
-};
-
 class VBO {
     public:
         GLuint id;
-        GLsizei stride;
-        std::vector<Attribute> attributes;
+        std::vector<VertexAttribute> attributes;
 
-        VBO(std::vector<Vertex>& vertices);
+        template <typename VertexType>
+        VBO(const std::vector<VertexType>& vertices) {
+            glGenBuffers(1, &id);
+            bind();
+            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VertexType), vertices.data(), GL_STATIC_DRAW);
+        
+            attributes = getVertexAttributes<VertexType>();
+        
+            unbind();
+        }
 
-        void bind();
-        void unbind();
-        void del();
+        void bind() const;
+        void unbind() const;
+        void del() const;
 };
 
 #endif

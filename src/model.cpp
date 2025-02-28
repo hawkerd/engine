@@ -37,27 +37,27 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 }
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
-    vector<Vertex> vertices;
+    vector<VertexPNTBS> vertices;
     vector<unsigned int> indices;
     vector<Texture> textures;
 
     // process vertices
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-        Vertex vertex;
+        VertexPNTBS vertex;
         glm::vec3 v;
 
         // position
         v.x = mesh->mVertices[i].x;
         v.y = mesh->mVertices[i].y;
         v.z = mesh->mVertices[i].z;
-        vertex.setPosition(v);
+        vertex.position = v;
 
         // normals
         if (mesh->HasNormals()) {
             v.x = mesh->mNormals[i].x;
             v.y = mesh->mNormals[i].y;
             v.z = mesh->mNormals[i].z;
-            vertex.setNormal(v);
+            vertex.normal = v;
         }
 
         // texture coordinates
@@ -65,24 +65,24 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
             glm::vec2 vec;
             vec.x = mesh->mTextureCoords[0][i].x;
             vec.y = mesh->mTextureCoords[0][i].y;
-            vertex.setTextureCoordinates(vec);
+            vertex.textureCoordinates = vec;
 
             if (mesh->HasTangentsAndBitangents()) {
                 // tangent
                 v.x = mesh->mTangents[i].x;
                 v.y = mesh->mTangents[i].y;
                 v.z = mesh->mTangents[i].z;
-                vertex.setTangent(v);
+                vertex.tangent = v;
 
                 //bitangent
                 v.x = mesh->mBitangents[i].x;
                 v.y = mesh->mBitangents[i].y;
                 v.z = mesh->mBitangents[i].z;
-                vertex.setBitangent(v);
+                vertex.bitangent = v;
             }
 
         } else {
-            vertex.setTextureCoordinates(glm::vec2(0.0f, 0.0f));
+            vertex.textureCoordinates = glm::vec2(0.0f, 0.0f);
         }
 
         vertices.push_back(vertex);
