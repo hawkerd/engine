@@ -60,6 +60,7 @@ int main()
     // -------------------------
     Shader shader("assets/shaders/lightingShader.vert", "assets/shaders/lightingShader.frag");
     Shader screenShader("assets/shaders/screenShader.vert", "assets/shaders/screenShader.frag");
+    Shader skyboxShader("assets/shaders/skyboxShader.vert", "assets/shaders/skyboxShader.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -126,6 +127,50 @@ int main()
         VertexPT({ 1.0f,  1.0f,  0.0f}, {1.0f, 1.0f})
     };
 
+    vector<VertexP> skyboxVertices = {
+        VertexP({-1.0f,  1.0f, -1.0f}),
+        VertexP({-1.0f, -1.0f, -1.0f}),
+        VertexP({ 1.0f, -1.0f, -1.0f}),
+        VertexP({ 1.0f, -1.0f, -1.0f}),
+        VertexP({ 1.0f,  1.0f, -1.0f}),
+        VertexP({-1.0f,  1.0f, -1.0f}),
+
+        VertexP({-1.0f, -1.0f,  1.0f}),
+        VertexP({-1.0f, -1.0f, -1.0f}),
+        VertexP({-1.0f,  1.0f, -1.0f}),
+        VertexP({-1.0f,  1.0f, -1.0f}),
+        VertexP({-1.0f,  1.0f,  1.0f}),
+        VertexP({-1.0f, -1.0f,  1.0f}),
+
+        VertexP({ 1.0f, -1.0f, -1.0f}),
+        VertexP({ 1.0f, -1.0f,  1.0f}),
+        VertexP({ 1.0f,  1.0f,  1.0f}),
+        VertexP({ 1.0f,  1.0f,  1.0f}),
+        VertexP({ 1.0f,  1.0f, -1.0f}),
+        VertexP({ 1.0f, -1.0f, -1.0f}),
+
+        VertexP({-1.0f, -1.0f,  1.0f}),
+        VertexP({-1.0f,  1.0f,  1.0f}),
+        VertexP({ 1.0f,  1.0f,  1.0f}),
+        VertexP({ 1.0f,  1.0f,  1.0f}),
+        VertexP({ 1.0f, -1.0f,  1.0f}),
+        VertexP({-1.0f, -1.0f,  1.0f}),
+
+        VertexP({-1.0f,  1.0f, -1.0f}),
+        VertexP({ 1.0f,  1.0f, -1.0f}),
+        VertexP({ 1.0f,  1.0f,  1.0f}),
+        VertexP({ 1.0f,  1.0f,  1.0f}),
+        VertexP({-1.0f,  1.0f,  1.0f}),
+        VertexP({-1.0f,  1.0f, -1.0f}),
+
+        VertexP({-1.0f, -1.0f, -1.0f}),
+        VertexP({-1.0f, -1.0f,  1.0f}),
+        VertexP({ 1.0f, -1.0f, -1.0f}),
+        VertexP({ 1.0f, -1.0f, -1.0f}),
+        VertexP({-1.0f, -1.0f,  1.0f}),
+        VertexP({ 1.0f, -1.0f,  1.0f})
+    };
+
     VAO cubeVAO;
     VBO cubeVBO(cubeVertices);
     cubeVAO.linkAttribs(cubeVBO, shader);
@@ -137,6 +182,10 @@ int main()
     VAO quadVAO;
     VBO quadVBO(quadVertices);
     quadVAO.linkAttribs(quadVBO, shader);
+
+    VAO skyboxVAO;
+    VBO skyboxVBO(skyboxVertices);
+    skyboxVAO.linkAttribs(skyboxVBO, shader);
 
     Texture cubeTex("assets/textures/container.jpg");
     Texture floorTex("assets/textures/wall.jpg");
@@ -175,6 +224,9 @@ int main()
     };
     unsigned int cubemapTexture = loadCubemap(faces);
 
+    skyboxShader.use();
+    skyboxShader.setInt("skybox", 0);
+
 
 
     // render loop
@@ -199,8 +251,19 @@ int main()
         window.setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         window.clear();
 
+        glDepthMask(GL_FALSE);
+        skyboxShader.use();
+        skyboxShader.setMat4("view", glm::mat4(glm::mat3(camera.getViewMatrix())));
+        skyboxShader.setMat4("projection", glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f));
+        skyboxVAO.bind();
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDepthMask(GL_TRUE);
+
+
+
+
         shader.use();
-        glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         shader.setMat4("view", view);
@@ -209,7 +272,7 @@ int main()
         cubeVAO.bind();
         glActiveTexture(GL_TEXTURE0);
         cubeTex.bind();	
-        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+        glm::mat4 model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         model = glm::mat4(1.0f);
