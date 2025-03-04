@@ -16,7 +16,7 @@ set(SRC_DIR src)
 set(ASSETS_DIR assets)
 set(BIN_DIR bin)
 set(INCLUDE_DIR include)
-set(LIB_DIR libs)
+set(LIBS_DIR C:/Code/libs)
 
 # source files
 set(SOURCES 
@@ -37,20 +37,20 @@ set(SOURCES
 add_executable(renderer ${SOURCES})
 
 # include directories
-target_include_directories(renderer PRIVATE ${CMAKE_SOURCE_DIR}/${INCLUDE_DIR})
+target_include_directories(renderer PRIVATE 
+    ${LIBS_DIR}/include
+    ${CMAKE_SOURCE_DIR}/${INCLUDE_DIR}
+)
+
 
 # link library directories
-target_link_directories(renderer PRIVATE ${CMAKE_SOURCE_DIR}/${LIB_DIR}/lib)
+target_link_directories(renderer PRIVATE ${LIBS_DIR}/lib)
 
 # link libaries
-target_link_libraries(renderer glfw3dll opengl32 gdi32 assimp)
+target_link_libraries(renderer glfw3 opengl32 gdi32 assimp)
 
 # move libraries and assets into bin dir at runtime
 add_custom_target(copy_assets ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/${LIB_DIR}/bin/glfw3.dll
-        ${CMAKE_SOURCE_DIR}/${LIB_DIR}/bin/libassimp-5.dll
-        ${CMAKE_BINARY_DIR}/${BIN_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/${ASSETS_DIR}
         ${CMAKE_BINARY_DIR}/${BIN_DIR}/${ASSETS_DIR}

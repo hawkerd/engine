@@ -1,10 +1,11 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <stb_image.h>
+#include <stb/stb_image.h>
 #include <iostream>
 #include <string>
 #include <glad/glad.h>
+#include <spdlog/spdlog.h>
 
 class Texture {
     public:
@@ -14,9 +15,10 @@ class Texture {
         std::string path;
 
         Texture(const std::string& path) : path(path), id(0) {
+            spdlog::info("loading texture from path: {}", path);
             loadTexture(path);
             if (id == 0) {
-                throw std::runtime_error("Failed to load texture");
+                spdlog::error("Failed to load texture");
             }
         }
          

@@ -52,17 +52,18 @@ class VertexPNTB {
         VertexPNTB(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoordinates, glm::vec3 tangent, glm::vec3 bitangent) : position(position), normal(normal), textureCoordinates(textureCoordinates), tangent(tangent), bitangent(bitangent) {}
 };
 
-class VertexPNTBS {
+class VertexPNTBSC {
     public:
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec2 textureCoordinates;
         glm::vec3 tangent;
         glm::vec3 bitangent;
+        glm::vec3 color;
         int boneIDs[MAX_BONE_INFLUENCE];
         float weights[MAX_BONE_INFLUENCE];
-        VertexPNTBS() = default;
-        VertexPNTBS(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoordinates, glm::vec3 tangent, glm::vec3 bitangent, int* boneIDs, float* weights) : position(position), normal(normal), textureCoordinates(textureCoordinates), tangent(tangent), bitangent(bitangent) {
+        VertexPNTBSC() = default;
+        VertexPNTBSC(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoordinates, glm::vec3 tangent, glm::vec3 bitangent, glm::vec3 color, int* boneIDs, float* weights) : position(position), normal(normal), textureCoordinates(textureCoordinates), tangent(tangent), bitangent(bitangent), color(color) {
             for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
                 this->boneIDs[i] = boneIDs[i];
                 this->weights[i] = weights[i];

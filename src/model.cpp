@@ -1,10 +1,12 @@
 #include <model.h>
 
-Model::Model(const char* path, Shader& shader, bool gamma) : gammaCorrection(gamma), shader(shader) {
+Model::Model(std::string path, Shader& shader, bool gamma) : gammaCorrection(gamma), shader(shader) {
+    spdlog::info("loading model from path: {}", path);
     loadModel(path);
 }
 
 void Model::draw() {
+    shader.use();
     for (unsigned int i = 0; i < meshes.size(); i++) {
         meshes[i].draw();
     }
@@ -15,15 +17,18 @@ void Model::loadModel(string path) {
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
     
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        throw std::runtime_error("error loading model");
+        spdlog::error("error loading model: {}", importer.GetErrorString());
     }
-    
+
     directory = path.substr(0, path.find_last_of('/'));
     
     processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
+    // log the nod einfo
+    spdlog::info("recursively processing node: {}, which has {} meshes and {} children", node->mName.C_Str(), node->mNumMeshes, node->mNumChildren);
+
     // process all the meshes of the node
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -37,52 +42,35 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 }
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
-    vector<VertexPNTBS> vertices;
+    vector<VertexPNTB> vertices;
     vector<unsigned int> indices;
     vector<Texture> textures;
 
+    if (mesh->HasPositions()) spdlog::info("mesh has positions");
+    if (mesh->HasNormals()) spdlog::info("mesh has normals");
+    if (mesh->HasTextureCoords(0)) spdlog::info("mesh has texture coordinates");
+    if (mesh->HasTangentsAndBitangents()) spdlog::info("mesh has tangents and bitangents");
+    if (mesh->HasVertexColors(0)) spdlog::info("mesh has vertex colors");
+
+
     // process vertices
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-        VertexPNTBS vertex;
+        VertexPNTB vertex;
         glm::vec3 v;
 
         // position
-        v.x = mesh->mVertices[i].x;
-        v.y = mesh->mVertices[i].y;
-        v.z = mesh->mVertices[i].z;
-        vertex.position = v;
+        if (mesh->HasPositions()) vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
 
         // normals
-        if (mesh->HasNormals()) {
-            v.x = mesh->mNormals[i].x;
-            v.y = mesh->mNormals[i].y;
-            v.z = mesh->mNormals[i].z;
-            vertex.normal = v;
-        }
-
-        // texture coordinates
-        if (mesh->mTextureCoords[0]) {
-            glm::vec2 vec;
-            vec.x = mesh->mTextureCoords[0][i].x;
-            vec.y = mesh->mTextureCoords[0][i].y;
-            vertex.textureCoordinates = vec;
-
+        if (mesh->HasNormals()) vertex.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+        
+        // texture coordinates/ tangents and bitangents
+        if (mesh->HasTextureCoords(0)) {
+            vertex.textureCoordinates = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
             if (mesh->HasTangentsAndBitangents()) {
-                // tangent
-                v.x = mesh->mTangents[i].x;
-                v.y = mesh->mTangents[i].y;
-                v.z = mesh->mTangents[i].z;
-                vertex.tangent = v;
-
-                //bitangent
-                v.x = mesh->mBitangents[i].x;
-                v.y = mesh->mBitangents[i].y;
-                v.z = mesh->mBitangents[i].z;
-                vertex.bitangent = v;
+                vertex.tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+                vertex.bitangent = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
             }
-
-        } else {
-            vertex.textureCoordinates = glm::vec2(0.0f, 0.0f);
         }
 
         vertices.push_back(vertex);
@@ -114,6 +102,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 // retrieve, load, and initilaize the texture from the material
 vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName) {
     vector<Texture> textures;
+    spdlog::info("loading {} material textures of type: {}", mat->GetTextureCount(type), typeName);
 
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
@@ -129,6 +118,10 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,
         }
 
         if (!skip) {
+            if (!std::filesystem::exists(directory + "/" + str.C_Str())) {
+                spdlog::warn("Skipping missing texture: {}", str.C_Str());
+                continue;
+            }
             Texture texture(directory + "/" + str.C_Str());
             texture.type = typeName;
             texture.path = str.C_Str();

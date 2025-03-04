@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <stb_image.h>
+#include <stb/stb_image.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -19,12 +19,15 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <iostream>
+#include <spdlog/spdlog.h>
+#include <filesystem>
 
 using namespace std;
 
 class Model {
 	public:
-		Model(const char* path, Shader& shader, bool gamma = false);
+		Model(string path, Shader& shader, bool gamma = false);
 		
 		void draw();
 	
